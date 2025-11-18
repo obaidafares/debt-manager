@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدير الديون - Debt Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+            padding: 30px;
+        }
+
+        .welcome-screen {
+            text-align: center;
+        }
+
+        .welcome-screen h1 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .welcome-screen p {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .app-screen {
+            display: none;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 20px;
+        }
+
+        .header h2 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .user-info {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .user-info span {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .phone-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .phone-input-group input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .phone-input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-small {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: background 0.3s;
+        }
+
+        .btn-small:hover {
+            background: #764ba2;
+        }
+
+        .contacts-list {
+            background: #f9f9f9;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .contact-item {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .contact-item:hover {
+            background: #f0f0f0;
+        }
+
+        .contact-item:last-child {
+            border-bottom: none;
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-name {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .contact-phone {
+            color: #999;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        .contact-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-delete {
+            padding: 6px 12px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s;
+        }
+
+        .btn-delete:hover {
+            background: #ff5252;
+        }
+
+        .add-debt-form {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            margin-bottom: 6px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .debts-list {
+            background: #f9f9f9;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .debt-item {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            background: white;
+            margin: 8px;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+
+        .debt-item:last-child {
+            border-bottom: none;
+        }
+
+        .debt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .debt-from {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .debt-amount {
+            color: #667eea;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .debt-details {
+            color: #666;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        .debt-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .debt-status.received {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .debt-status.sent {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #999;
+            padding: 30px 20px;
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 10px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #ff5252;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s ease-out;
+            z-index: 1000;
+        }
+
+        .notification.error {
+            background: #ff6b6b;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            .welcome-screen h1 {
+                font-size: 24px;
+            }
+
+            .debt-amount {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Screen -->
+        <div class="welcome-screen" id="welcomeScreen">
+            <h1>مدير الديون</h1>
+            <p>Debt Manager - P2P</p>
+            <p style="font-size: 14px; color: #999; margin-bottom: 20px;">إدارة الديون بين الأصدقاء والعائلة</p>
+            
+            <div class="input-group">
+                <label for="userName">اسمك</label>
+                <input type="text" id="userName" placeholder="أدخل اسمك الكامل" />
+            </div>
+
+            <button class="btn" onclick="startApp()">ابدأ الآن</button>
+        </div>
+
+        <!-- App Screen -->
+        <div class="app-screen" id="appScreen">
+            <div class="header">
+                <h2>مدير الديون</h2>
+                <p>Debt Manager</p>
+            </div>
+
+            <div class="user-info">
+                <p>مرحباً، <span id="displayName"></span></p>
+            </div>
+
+            <!-- Add Contact Section -->
+            <div class="section">
+                <div class="section-title">إضافة جهة اتصال</div>
+                <div class="phone-input-group">
+                    <input type="text" id="contactPhone" placeholder="رقم الهاتف الليبي (مثال: 218912345678)" maxlength="12" />
+                    <button class="btn-small" onclick="addContact()">إضافة</button>
+                </div>
+                <div class="contacts-list" id="contactsList">
+                    <div class="empty-message">لا توجد جهات اتصال حتى الآن</div>
+                </div>
+            </div>
+
+            <!-- Add Debt Section -->
+            <div class="section">
+                <div class="section-title">إضافة دين</div>
+                <div class="add-debt-form">
+                    <div class="form-group">
+                        <label for="debtContact">جهة الاتصال</label>
+                        <select id="debtContact">
+                            <option value="">اختر جهة اتصال</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="debtAmount">المبلغ (دينار ليبي)</label>
+                        <input type="number" id="debtAmount" placeholder="أدخل المبلغ" min="0" step="0.01" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="debtType">نوع الدين</label>
+                        <select id="debtType">
+                            <option value="owed">أنا مدين</option>
+                            <option value="owed_to_me">هو مدين لي</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="debtDescription">الوصف (اختياري)</label>
+                        <input type="text" id="debtDescription" placeholder="مثال: قرض شخصي" />
+                    </div>
+
+                    <button class="btn" onclick="addDebt()">تسجيل الدين</button>
+                </div>
+            </div>
+
+            <!-- Debts List Section -->
+            <div class="section">
+                <div class="section-title">الديون المسجلة</div>
+                <div class="debts-list" id="debtsList">
+                    <div class="empty-message">لا توجد ديون مسجلة حتى الآن</div>
+                </div>
+            </div>
+
+            <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+        </div>
+    </div>
+
+    <script>
+        // Libyan phone number validation
+        function isValidLibyanPhone(phone) {
+            // Libyan phone numbers start with 218 (country code) or 0
+            const libyanPhoneRegex = /^(218|0)(9|91|92|93|94|95|96|97|98|99)\d{7}$/;
+            return libyanPhoneRegex.test(phone.replace(/\s+/g, ''));
+        }
+
+        // Format phone number
+        function formatPhoneNumber(phone) {
+            let cleaned = phone.replace(/\D/g, '');
+            if (cleaned.startsWith('0')) {
+                cleaned = '218' + cleaned.substring(1);
+            }
+            return cleaned;
+        }
+
+        // Show notification
+        function showNotification(message, isError = false) {
+            const notification = document.createElement('div');
+            notification.className = 'notification' + (isError ? ' error' : '');
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Start the app
+        function startApp() {
+            const userName = document.getElementById('userName').value.trim();
+            if (!userName) {
+                showNotification('الرجاء إدخال اسمك', true);
+                return;
+            }
+
+            localStorage.setItem('currentUser', userName);
+            localStorage.setItem('currentUserPhone', generateUserPhone());
+            
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'block';
+            document.getElementById('displayName').textContent = userName;
+
+            loadContacts();
+            loadDebts();
+            startP2PSync();
+        }
+
+        // Generate a unique phone for the user (for P2P simulation)
+        function generateUserPhone() {
+            let userPhone = localStorage.getItem('userPhone');
+            if (!userPhone) {
+                const random = Math.floor(Math.random() * 9000000) + 1000000;
+                userPhone = '218' + (90 + Math.floor(Math.random() * 10)) + random;
+                localStorage.setItem('userPhone', userPhone);
+            }
+            return userPhone;
+        }
+
+        // Add contact
+        function addContact() {
+            const phone = document.getElementById('contactPhone').value.trim();
+            
+            if (!phone) {
+                showNotification('الرجاء إدخال رقم الهاتف', true);
+                return;
+            }
+
+            if (!isValidLibyanPhone(phone)) {
+                showNotification('رقم الهاتف الليبي غير صحيح', true);
+                return;
+            }
+
+            const formattedPhone = formatPhoneNumber(phone);
+            let contacts = JSON.parse(localStorage.getItem('contacts') || '[]');
+
+            if (contacts.some(c => c.phone === formattedPhone)) {
+                showNotification('هذا الرقم موجود بالفعل', true);
+                return;
+            }
+
+            const contactName = prompt('أدخل اسم جهة الاتصال:');
+            if (!contactName) return;
+
+            contacts.push({
+                id: Date.now(),
+                name: contactName,
+                phone: formattedPhone,
+                addedAt: new Date().toISOString()
+            });
+
+            localStorage.setItem('contacts', JSON.stringify(contacts));
+            document.getElementById('contactPhone').value = '';
+            loadContacts();
+            showNotification('تمت إضافة جهة الاتصال بنجاح');
+        }
+
+        // Load contacts
+        function loadContacts() {
+            const contacts = JSON.parse(localStorage.getItem('contacts') || '[]');
+            const contactsList = document.getElementById('contactsList');
+            const debtContactSelect = document.getElementById('debtContact');
+
+            if (contacts.length === 0) {
+                contactsList.innerHTML = '<div class="empty-message">لا توجد جهات اتصال حتى الآن</div>';
+                debtContactSelect.innerHTML = '<option value="">اختر جهة اتصال</option>';
+                return;
+            }
+
+            contactsList.innerHTML = contacts.map(contact => `
+                <div class="contact-item">
+                    <div class="contact-info">
+                        <div class="contact-name">${contact.name}</div>
+                        <div class="contact-phone">${contact.phone}</div>
+                    </div>
+                    <div class="contact-actions">
+                        <button class="btn-delete" onclick="deleteContact(${contact.id})">حذف</button>
+                    </div>
+                </div>
+            `).join('');
+
+            debtContactSelect.innerHTML = '<option value="">اختر جهة اتصال</option>' + 
+                contacts.map(contact => `
+                    <option value="${contact.id}">${contact.name} - ${contact.phone}</option>
+                `).join('');
+        }
+
+        // Delete contact
+        function deleteContact(id) {
+            if (!confirm('هل أنت متأكد من حذف جهة الاتصال؟')) return;
+
+            let contacts = JSON.parse(localStorage.getItem('contacts') || '[]');
+            contacts = contacts.filter(c => c.id !== id);
+            localStorage.setItem('contacts', JSON.stringify(contacts));
+            loadContacts();
+            showNotification('تم حذف جهة الاتصال');
+        }
+
+        // Add debt
+        function addDebt() {
+            const contactId = document.getElementById('debtContact').value;
+            const amount = parseFloat(document.getElementById('debtAmount').value);
+            const type = document.getElementById('debtType').value;
+            const description = document.getElementById('debtDescription').value;
+
+            if (!contactId) {
+                showNotification('الرجاء اختيار جهة اتصال', true);
+                return;
+            }
+
+            if (!amount || amount <= 0) {
+                showNotification('الرجاء إدخال مبلغ صحيح', true);
+                return;
+            }
+
+            const contacts = JSON.parse(localStorage.getItem('contacts') || '[]');
+            const contact = contacts.find(c => c.id == contactId);
+
+            if (!contact) {
+                showNotification('جهة الاتصال غير موجودة', true);
+                return;
+            }
+
+            const debt = {
+                id: Date.now(),
+                contactId: contact.id,
+                contactName: contact.name,
+                contactPhone: contact.phone,
+                amount: amount,
+                type: type,
+                description: description,
+                createdAt: new Date().toISOString(),
+                createdBy: localStorage.getItem('currentUser'),
+                createdByPhone: localStorage.getItem('userPhone'),
+                status: 'active'
+            };
+
+            let debts = JSON.parse(localStorage.getItem('debts') || '[]');
+            debts.push(debt);
+            localStorage.setItem('debts', JSON.stringify(debts));
+
+            // Simulate P2P notification
+            simulateP2PNotification(contact, debt);
+
+            document.getElementById('debtAmount').value = '';
+            document.getElementById('debtDescription').value = '';
+            document.getElementById('debtContact').value = '';
+            loadDebts();
+            showNotification('تم تسجيل الدين بنجاح');
+        }
+
+        // Load debts
+        function loadDebts() {
+            const debts = JSON.parse(localStorage.getItem('debts') || '[]');
+            const debtsList = document.getElementById('debtsList');
+
+            if (debts.length === 0) {
+                debtsList.innerHTML = '<div class="empty-message">لا توجد ديون مسجلة حتى الآن</div>';
+                return;
+            }
+
+            debtsList.innerHTML = debts.map(debt => {
+                const isOwed = debt.type === 'owed';
+                const statusText = isOwed ? 'أنت مدين' : 'هو مدين لك';
+                const statusClass = isOwed ? 'sent' : 'received';
+                const createdDate = new Date(debt.createdAt).toLocaleDateString('ar-LY');
+
+                return `
+                    <div class="debt-item">
+                        <div class="debt-header">
+                            <div class="debt-from">${debt.contactName}</div>
+                            <div class="debt-amount">${debt.amount.toFixed(2)} د.ل</div>
+                        </div>
+                        <div class="debt-details">
+                            ${debt.description ? `<div>الوصف: ${debt.description}</div>` : ''}
+                            <div>التاريخ: ${createdDate}</div>
+                            <div>من قبل: ${debt.createdBy}</div>
+                        </div>
+                        <span class="debt-status ${statusClass}">${statusText}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Simulate P2P notification
+        function simulateP2PNotification(contact, debt) {
+            // In a real P2P app, this would send a notification to the contact's device
+            // For now, we'll store it in localStorage and simulate with a message
+            const message = `تم إضافة دين جديد لك من ${debt.createdBy}: ${debt.amount} د.ل`;
+            showNotification(message);
+        }
+
+        // Start P2P sync (simulate real-time updates)
+        function startP2PSync() {
+            // Check for updates every 2 seconds
+            setInterval(() => {
+                loadDebts();
+                loadContacts();
+            }, 2000);
+        }
+
+        // Logout
+        function logout() {
+            if (!confirm('هل أنت متأكد من تسجيل الخروج؟')) return;
+
+            localStorage.removeItem('currentUser');
+            document.getElementById('appScreen').style.display = 'none';
+            document.getElementById('welcomeScreen').style.display = 'block';
+            document.getElementById('userName').value = '';
+        }
+
+        // Check if user is already logged in
+        window.addEventListener('load', () => {
+            const currentUser = localStorage.getItem('currentUser');
+            if (currentUser) {
+                document.getElementById('userName').value = currentUser;
+                startApp();
+            }
+        });
+    </script>
+</body>
+</html>
